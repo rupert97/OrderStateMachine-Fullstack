@@ -1,11 +1,10 @@
 # Business Logic & State Machine logic
 from src.repositories.order_repository import AbstractOrderRepository
-from src.utils.state_config import VALID_TRANSITIONS, NON_CANCELLABLE_STATES
+from src.utils.state_config import VALID_TRANSITIONS, NON_CANCELLABLE_STATES, OrderState
+from src.exceptions import InvalidStateTransition
 from src.repositories.models import Order
 from typing import Dict, Any
 
-class InvalidStateTransition(Exception):
-    pass
 
 class OrderService:
     def __init__(self, repository: AbstractOrderRepository):
@@ -38,17 +37,23 @@ class OrderService:
         return order
 
     def _get_next_state(self, current_state: str, event_type: str) -> str:
-        # Global Rule: Any state except Delivered/Returned/Refunded to Cancelled
         if event_type == "orderCancelledByUser" and current_state not in NON_CANCELLABLE_STATES:
-            return "Cancelled"
+            return OrderState.CANCELLED
             
-        next_state = VALID_TRANSITIONS.get(current_state, {}).get(event_type)
+        if current_state not in VALID_TRANSITIONS:
+            raise InvalidStateTransition(f"System error: '{current_state}' is not a recognized state.")
+            
+
+        allowed_events = VALID_TRANSITIONS[current_state]
         
-        if not next_state:
+        if event_type not in allowed_events:
+            valid_options = ", ".join(allowed_events.keys())
             raise InvalidStateTransition(
-                f"Event '{event_type}' is not a valid transition from state '{current_state}'"
+                f"Cannot trigger '{event_type}' from '{current_state}'. "
+                f"Valid events are: [{valid_options}]"
             )
-        return next_state
+            
+        return allowed_events[event_type]
 
     def _run_business_rules(self, order: Order, event_type: str, metadata: Dict[str, Any]):
 

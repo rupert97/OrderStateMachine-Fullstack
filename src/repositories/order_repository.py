@@ -2,16 +2,13 @@
 
 from typing import Dict
 from src.repositories.models import Order
+from src.exceptions import OrderNotFoundError, OrderConcurrencyError
 from abc import ABC, abstractmethod
 import boto3
 from botocore.exceptions import ClientError
 import json
 from decimal import Decimal
 
-class OrderNotFoundError(Exception):
-    pass
-class OrderConcurrencyError(Exception):
-    pass
 
 
 class AbstractOrderRepository(ABC):

@@ -1,32 +1,21 @@
-# Lambda handler for POST /orders/{id}/events
+from aws_lambda_powertools.event_handler.api_gateway import Router
 from aws_lambda_powertools import Logger, Tracer
-from aws_lambda_powertools.event_handler import APIGatewayRestResolver
-from aws_lambda_powertools.utilities.typing import LambdaContext
-from src.repositories.order_repository import InMemoryOrderRepository, DynamoDBOrderRepository, OrderNotFoundError, OrderConcurrencyError
-from src.services.order_service import OrderService, InvalidStateTransition
-import os
+from src.dependencies import order_service
+from src.exceptions import OrderNotFoundError, InvalidStateTransition, OrderConcurrencyError
+
 
 logger = Logger()
 tracer = Tracer()
-app = APIGatewayRestResolver()
+router = Router()
 
-repo = DynamoDBOrderRepository(table_name=os.environ.get("ORDERS_TABLE", "Orders"))
-#repo = InMemoryOrderRepository()
-service = OrderService(repo)
-
-@app.post("/orders/<order_id>/events")
+@router.post("/orders/<order_id>/events")
 def handle_transition(order_id: str):
-    body = app.current_event.json_body
+    body = router.current_event.json_body
     event_type = body.get("eventType")
-    metadata = body.get("metadata", {})
-
-    if not event_type:
-        return {"error": "eventType is required"}, 400
 
     try:
-        updated_order = service.handle_event(order_id, event_type, metadata)
-        return updated_order.dict(), 200
-
+        updated_order = order_service.handle_event(order_id, event_type, body.get("metadata", {}))
+        return updated_order.model_dump(), 200
     except OrderNotFoundError as e:
         logger.warning(f"Order not found: {order_id}")
         return {"error": str(e)}, 404
@@ -42,8 +31,3 @@ def handle_transition(order_id: str):
     except Exception as e:
         logger.exception("Unexpected error")
         return {"error": "Internal server error"}, 500
-
-@logger.inject_lambda_context
-@tracer.capture_lambda_handler
-def lambda_handler(event: dict, context: LambdaContext):
-    return app.resolve(event, context)

@@ -11,6 +11,7 @@ Globals:
     Environment:
       Variables:
         ORDERS_TABLE: !Ref OrdersTable
+        POWERTOOLS_SERVICE_NAME: order-service
 
 Resources:
   # 1. The DynamoDB Table
@@ -21,37 +22,26 @@ Resources:
         Name: order_id
         Type: String
 
-  # 2. Create Order Function
-  CreateOrderFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: .
-      Handler: src.handlers.create_order.lambda_handler
-      Policies:
-        - DynamoDBCrudPolicy:
-            TableName: !Ref OrdersTable
-      Events:
-        CreateOrder:
-          Type: Api
-          Properties:
-            Path: /orders
-            Method: post
-
-  # 3. Process Event Function
-  ProcessEventFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: .
-      Handler: src.handlers.process_event.lambda_handler
-      Policies:
-        - DynamoDBCrudPolicy:
-            TableName: !Ref OrdersTable
-      Events:
-        ProcessEvent:
-          Type: Api
-          Properties:
-            Path: /orders/{order_id}/events
-            Method: post
+  # 2. Create OrderApi Function
+  OrderApiFunction:
+      Type: AWS::Serverless::Function
+      Properties:
+        CodeUri: .
+        Handler: src.handlers.api.lambda_handler
+        Policies:
+          - DynamoDBCrudPolicy:
+              TableName: !Ref OrdersTable
+        Events:
+          CreateOrder:
+            Type: Api
+            Properties:
+              Path: /orders
+              Method: post
+          ProcessEvent:
+            Type: Api
+            Properties:
+              Path: /orders/{order_id}/events
+              Method: post
 
 Outputs:
   WebEndpoint:

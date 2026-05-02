@@ -1,45 +1,58 @@
 # State machine transition map
+from enum import Enum
+
+class OrderState(str, Enum):
+    PENDING = "Pending"
+    ON_HOLD = "OnHold"
+    PENDING_PAYMENT = "PendingPayment"
+    CONFIRMED = "Confirmed"
+    PROCESSING = "Processing"
+    SHIPPED = "Shipped"
+    DELIVERED = "Delivered"
+    RETURNING = "Returning"
+    RETURNED = "Returned"
+    REFUNDED = "Refunded"
+    CANCELLED = "Cancelled"
+
 VALID_TRANSITIONS = {
-    "Pending": {
-        "pendingBiometricalVerification": "OnHold",
-        "noVerificationNeeded": "PendingPayment",
-        "paymentFailed": "Cancelled",
-        "orderCancelled": "Cancelled",
-        "orderCancelledByUser": "Cancelled",
+    OrderState.PENDING: {
+        "pendingBiometricalVerification": OrderState.ON_HOLD,
+        "noVerificationNeeded": OrderState.PENDING_PAYMENT,
+        "paymentFailed": OrderState.CANCELLED,
+        "orderCancelled": OrderState.CANCELLED,
+        "orderCancelledByUser": OrderState.CANCELLED,
     },
-    "OnHold": {
-        "biometricalVerificationSuccessful": "PendingPayment",
-        "verificationFailed": "Cancelled",
-        "orderCancelledByUser": "Cancelled"
+    OrderState.ON_HOLD: {
+        "biometricalVerificationSuccessful": OrderState.PENDING_PAYMENT,
+        "verificationFailed": OrderState.CANCELLED,
+        "orderCancelledByUser": OrderState.CANCELLED
     },
-    "PendingPayment": {
-        "paymentSuccessful": "Confirmed",
-        "orderCancelledByUser": "Cancelled",
+    OrderState.PENDING_PAYMENT: {
+        "paymentSuccessful": OrderState.CONFIRMED,
+        "orderCancelledByUser": OrderState.CANCELLED,
     },
-    "Confirmed": {
-        "preparingShipment": "Processing",
-        "orderCancelledByUser": "Cancelled",
+    OrderState.CONFIRMED: {
+        "preparingShipment": OrderState.PROCESSING,
+        "orderCancelledByUser": OrderState.CANCELLED,
     },
-    "Processing": {
-        "itemDispatched": "Shipped",
-        "orderCancelledByUser": "Cancelled",
+    OrderState.PROCESSING: {
+        "itemDispatched": OrderState.SHIPPED,
+        "orderCancelledByUser": OrderState.CANCELLED,
     },
-    "Shipped": {
-        "itemReceivedByCustomer": "Delivered",
-        "deliveryIssue": "OnHold",
-        "orderCancelled": "Cancelled"
+    OrderState.SHIPPED: {
+        "itemReceivedByCustomer": OrderState.DELIVERED,
+        "deliveryIssue": OrderState.ON_HOLD,
+        "orderCancelled": OrderState.CANCELLED
     },
-    "Delivered": {
-        "returnInitiatedByCustomer": "Returning"
+    OrderState.DELIVERED: {
+        "returnInitiatedByCustomer": OrderState.RETURNING
     },
-    "Returning": {
-        "itemReceivedBack": "Returned",
-        "orderCancelledByUser": "Cancelled"
+    OrderState.RETURNING: {
+        "itemReceivedBack": OrderState.RETURNED,
+        "orderCancelledByUser": OrderState.CANCELLED
     },
-    "Returned": {
-        "refundProcessed": "Refunded",
+    OrderState.RETURNED: {
+        "refundProcessed": OrderState.REFUNDED,
     },
-    "Refunded": {},
-    "Cancelled": {}
 }
-NON_CANCELLABLE_STATES = ["Delivered", "Returned", "Refunded"]
+NON_CANCELLABLE_STATES = [OrderState.DELIVERED, OrderState.RETURNED, OrderState.REFUNDED]
