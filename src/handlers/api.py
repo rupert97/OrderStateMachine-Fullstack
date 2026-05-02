@@ -6,16 +6,17 @@ for all API Gateway requests, delegating routing to specialized handlers
 in create_order.py and process_event.py.
 """
 from aws_lambda_powertools import Logger, Tracer
-from aws_lambda_powertools.event_handler import APIGatewayRestResolver
 from src.handlers.create_order import router as create_order_router
 from src.handlers.process_event import router as process_event_router
 from src.handlers.get_order import router as get_order_router
+from aws_lambda_powertools.event_handler import APIGatewayRestResolver, CORSConfig
 
 logger = Logger()
 tracer = Tracer()
 
 # Initialize the main App
-app = APIGatewayRestResolver()
+cors_config = CORSConfig(allow_origin="*", allow_headers=["Content-Type"])
+app = APIGatewayRestResolver(cors=cors_config)
 
 # Register the routes
 app.include_router(create_order_router)
