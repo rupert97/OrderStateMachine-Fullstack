@@ -19,8 +19,9 @@ class OrderService:
         repository: The data access layer for persisting and retrieving orders.
     """
 
-    def __init__(self, repository: AbstractOrderRepository):
+    def __init__(self, repository: AbstractOrderRepository, support_service):
         self.repository = repository
+        self.support_service = support_service
 
     def create_order(self, product_ids: list, amount: float) -> Order:
         """
@@ -48,7 +49,7 @@ class OrderService:
         Args:
             order_id: The unique identifier of the order to update.
             event_type: The name of the event being triggered (e.g., 'paymentSuccessful').
-            metadata: Additional context about the event for auditing purposes.
+            metadata: Additional context that could be used to pass event-specific data.
 
         Returns:
             The updated Order object.
@@ -64,7 +65,7 @@ class OrderService:
         next_state = self._get_next_state(current_state, event_type)
         
         # Business Logic: The $1000 check 
-        self._run_business_rules(order, event_type, metadata)
+        self.support_service.run_business_rules(order, event_type, metadata)
         
         order.add_history(
             event_type=event_type, 
@@ -109,25 +110,3 @@ class OrderService:
             
         return allowed_events[event_type]
 
-    def _run_business_rules(self, order: Order, event_type: str, metadata: Dict[str, Any]):
-        """
-        Enforces domain-specific constraints beyond basic state transitions.
-
-        Args:
-            order: The order object being processed.
-            event_type: The event triggering the rule check.
-            metadata: Contextual data that might influence rule execution.
-        """
-        # Rule: paymentFailed + amount > 1000
-        if event_type == "paymentFailed" and order.amount > 1000:
-            self._create_support_ticket(order)
-
-    def _create_support_ticket(self, order: Order):
-        """
-        Generates an alert for human intervention on high-value failures.
-
-        Args:
-            order: The order that requires manual review.
-        """
-        # In a real app, this might call another service or SNS
-        print(f"LOG: Support ticket created for high-value order {order.order_id}")
