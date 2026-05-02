@@ -3,6 +3,11 @@ Transform: AWS::Serverless-2016-10-31
 Description: Order State Machine API
 
 Globals:
+  Api:
+    Cors:
+      AllowMethods: "'POST,GET,OPTIONS'"
+      AllowHeaders: "'Content-Type'"
+      AllowOrigin: "'*'"
   Function:
     Timeout: 15
     MemorySize: 512
@@ -42,6 +47,11 @@ Resources:
             Properties:
               Path: /orders/{order_id}/events
               Method: post
+          GetOrder:
+            Type: Api 
+            Properties:
+              Path: /orders/{order_id}
+              Method: get
 
 Outputs:
   WebEndpoint:
