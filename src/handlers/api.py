@@ -1,6 +1,5 @@
 from aws_lambda_powertools import Logger, Tracer
 from aws_lambda_powertools.event_handler import APIGatewayRestResolver
-
 from src.handlers.create_order import router as create_order_router
 from src.handlers.process_event import router as process_event_router
 

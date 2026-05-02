@@ -1,5 +1,5 @@
 # Business Logic & State Machine logic
-from src.repositories.order_repository import AbstractOrderRepository
+from src.repositories.base import AbstractOrderRepository
 from src.utils.state_config import VALID_TRANSITIONS, NON_CANCELLABLE_STATES, OrderState
 from src.exceptions import InvalidStateTransition
 from src.repositories.models import Order
