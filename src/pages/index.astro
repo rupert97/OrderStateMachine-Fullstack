@@ -1,17 +1,24 @@
 ---
-
+import "../styles/global.css";
+import OrderViewer from "../components/OrderViewer";
+import CreateOrder from "../components/CreateOrder";
 ---
 
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
 		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
+		<title>Order Manager</title>
 	</head>
-	<body>
-		<h1>Astro</h1>
+	<body class="bg-gray-50 min-h-screen py-12 px-4">
+		<main class="max-w-4xl mx-auto space-y-12">
+			<h1 class="text-4xl font-extrabold text-center text-gray-900">
+				Order State Machine
+			</h1>
+
+			<CreateOrder client:load />
+			<OrderViewer client:load />
+		</main>
 	</body>
 </html>
