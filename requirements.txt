@@ -1,0 +1,4 @@
+pydantic
+aws-lambda-powertools
+boto3
+aws-xray-sdk

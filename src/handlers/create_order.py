@@ -2,7 +2,7 @@
 from aws_lambda_powertools import Logger, Tracer
 from aws_lambda_powertools.event_handler import APIGatewayRestResolver
 from aws_lambda_powertools.utilities.typing import LambdaContext
-from src.repositories.order_repository import InMemoryOrderRepository
+from src.repositories.order_repository import InMemoryOrderRepository, DynamoDBOrderRepository
 from src.services.order_service import OrderService
 import os
 
@@ -11,8 +11,8 @@ tracer = Tracer()
 app = APIGatewayRestResolver()
 
 # Initialize Repository and Service outside the handler (for Lambda warm starts)
-#repo = DynamoDBOrderRepository(table_name=os.environ.get("ORDERS_TABLE", "Orders"))
-repo = InMemoryOrderRepository()
+repo = DynamoDBOrderRepository(table_name=os.environ.get("ORDERS_TABLE", "Orders"))
+#repo = InMemoryOrderRepository()
 
 service = OrderService(repo)
 

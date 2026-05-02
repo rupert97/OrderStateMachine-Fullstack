@@ -2,7 +2,7 @@
 from aws_lambda_powertools import Logger, Tracer
 from aws_lambda_powertools.event_handler import APIGatewayRestResolver
 from aws_lambda_powertools.utilities.typing import LambdaContext
-from src.repositories.order_repository import InMemoryOrderRepository, OrderNotFoundError, OrderConcurrencyError
+from src.repositories.order_repository import InMemoryOrderRepository, DynamoDBOrderRepository, OrderNotFoundError, OrderConcurrencyError
 from src.services.order_service import OrderService, InvalidStateTransition
 import os
 
@@ -10,8 +10,8 @@ logger = Logger()
 tracer = Tracer()
 app = APIGatewayRestResolver()
 
-#repo = DynamoDBOrderRepository(table_name=os.environ.get("ORDERS_TABLE", "Orders"))
-repo = InMemoryOrderRepository()
+repo = DynamoDBOrderRepository(table_name=os.environ.get("ORDERS_TABLE", "Orders"))
+#repo = InMemoryOrderRepository()
 service = OrderService(repo)
 
 @app.post("/orders/<order_id>/events")
