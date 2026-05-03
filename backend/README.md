@@ -1,4 +1,4 @@
-# Order State Machine Technical Challenge
+# Order State Machine Backend
 
 A production-ready, serverless Order Management System built with **AWS Lambda**, **DynamoDB**, and **Python 3.14**. It implements a robust state machine with optimistic locking, business rules for high-value orders, and automated audit trails.
 
