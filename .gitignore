@@ -13,7 +13,7 @@ pnpm-debug.log*
 .env.production
 
 .DS_Store
-
+.vscode/
 .idea/
 
 coverage/

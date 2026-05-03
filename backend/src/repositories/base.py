@@ -43,6 +43,6 @@ class AbstractOrderRepository(ABC):
 
         Raises:
             OrderConcurrencyError: If the version check fails during an update.
-            Exception: If an order with the same ID already exists and is_new is True.
+            OrderAlreadyExistsError: If an order with the same ID already exists and is_new is True.
         """
-        pass
+        pass
