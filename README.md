@@ -1,67 +1,114 @@
-# OrderStateMachineTechnicalChallenge
+# Order State Machine Technical Challenge
 
-A Lambda-based Order State Machine backed by DynamoDB.
+A production-ready, serverless Order Management System built with **AWS Lambda**, **DynamoDB**, and **Python 3.14**. It implements a robust state machine with optimistic locking, business rules for high-value orders, and automated audit trails.
 
-## Project Structure
+## 🚀 Key Features
 
+- **Event-Driven State Machine**: Robust handling of order lifecycles (Pending → Confirmed → Shipped, etc.).
+- **Optimistic Locking**: Prevents race conditions during state transitions using versioning in DynamoDB.
+- **Support Ticketing Logic**: Automatic identification of high-value orders ($1000+) requiring manual intervention on failure.
+- **Pydantic V2 Integration**: Strong data validation and seamless `camelCase` (Frontend) to `snake_case` (Backend) mapping using Pydantic aliases.
+- **Developer Friendly**: Integrated with AWS Lambda Powertools for structured logging, tracing, and metrics.
+
+## 🛠️ Tech Stack
+
+- **Runtime**: Python 3.14
+- **Database**: Amazon DynamoDB
+- **Framework**: AWS SAM (Serverless Application Model)
+- **Validation**: Pydantic v2
+- **Utilities**: AWS Lambda Powertools
+- **Testing**: Pytest, Moto (DynamoDB mocking), Coverage.py
+
+## 📂 Project Structure
+
+```text
+backend/
+├── src/
+│   ├── handlers/
+│   │   ├── api.py             # Main entry point (APIGatewayRestResolver)
+│   │   ├── create_order.py    # Logic for POST /orders
+│   │   ├── get_order.py       # Logic for GET /orders/{id}
+│   │   └── process_event.py   # Logic for POST /orders/{id}/events
+│   ├── services/
+│   │   ├── order_service.py   # State machine & business orchestration
+│   │   └── support_service.py # High-value order handling rules
+│   ├── repositories/
+│   │   ├── models.py          # Pydantic schemas & DynamoDB entities
+│   │   ├── base.py            # Abstract repository interfaces
+│   │   └── dynamo_repository.py # DynamoDB concrete implementation
+│   ├── utils/
+│   │   └── state_config.py    # Transition maps & state definitions
+│   ├── dependencies.py        # Dependency injection
+│   └── exceptions.py          # Domain-specific exceptions
+├── tests/
+│   └── unit/                  # Comprehensive unit tests
+├── template.yaml              # AWS SAM Infrastructure as Code
+└── pyproject.toml             # Python project metadata & dependencies
 ```
-src/
-├── handlers/
-│   ├── create_order.py        # Lambda handler for POST /orders
-│   └── process_event.py       # Lambda handler for POST /orders/{id}/events
-├── services/
-│   ├── order_service.py       # Business Logic & State Machine logic
-│   └── support_service.py     # Logic for the $1000+ support ticket
-├── repositories/
-│   ├── order_repository.py    # DynamoDB interaction (Repository Pattern)
-│   └── models.py              # Pydantic models for Order and Events
-├── exceptions.py              # Custom exceptions (e.g., InvalidStateTransition)
-└── utils/
-    └── state_config.py        # State machine transition map
-```
 
-## Requirements
+## ⚙️ Setup & Installation
 
+### 1. Requirements
 - Python 3.14+
-- [uv](https://github.com/astral-sh/uv) (recommended) **or** pip
+- [uv](https://github.com/astral-sh/uv) (recommended) or `pip`
+- AWS SAM CLI (for deployment)
 
-## Setup
-
-### Using uv (recommended)
-
+### 2. Environment Setup
 ```bash
-# Install uv if you don't have it
-pip install uv
+# Clone the repository
+git clone <repository-url>
+cd OrderStateMachineTechnicalChallenge/backend
 
-# Create and activate virtualenv targeting Python 3.14
-uv venv --python 3.14
-.venv\Scripts\activate   # Windows
-
-# Install all dependencies (including dev extras)
+# Using uv (recommended)
+uv venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
 uv pip install -e ".[dev]"
-```
 
-### Using pip
-
-```bash
-python3.14 -m venv .venv
-.venv\Scripts\activate   # Windows
+# Using traditional pip
+python -m venv venv
+source venv/bin/activate   # Windows: venv\Scripts\activate
 pip install -e ".[dev]"
 ```
 
-## Running Tests
+## 🧪 Running Tests
+
+The project uses `pytest` with `pytest-cov` for coverage reporting.
 
 ```bash
+# Run all tests
+$env:PYTHONPATH="."  # Windows
 pytest
+
+# Run tests with coverage report
+pytest --cov=src
 ```
 
-## Linting & Formatting
+## 📦 Build & Deploy
 
+This project is deployed using AWS SAM.
+
+### Build
 ```bash
-# Format + lint
-ruff format .
-ruff check . --fix
+sam build
+```
 
-# Type check
-mypy .
+### Deploy
+```bash
+sam deploy --guided
+```
+
+## 📡 API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/orders` | Create a new order (Status: Pending) |
+| `GET` | `/orders/{order_id}` | Retrieve order details and audit history |
+| `POST` | `/orders/{order_id}/events` | Trigger a state transition (e.g., `paymentSuccessful`) |
+
+### Example Create Order Request
+```json
+{
+  "productIds": ["prod-123", "prod-456"],
+  "amount": 1250.00
+}
 ```
