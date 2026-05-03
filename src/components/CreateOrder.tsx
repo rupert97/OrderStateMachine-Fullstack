@@ -55,10 +55,11 @@ export default function CreateOrder() {
 
                 <form onSubmit={handleCreate} className="space-y-5">
                     <div>
-                        <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">
+                        <label htmlFor="productIds" className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">
                             Product IDs (comma separated)
                         </label>
                         <input
+                            id="productIds"
                             type="text"
                             required
                             className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all font-mono text-sm text-slate-700"
@@ -68,10 +69,11 @@ export default function CreateOrder() {
                     </div>
 
                     <div>
-                        <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">
+                        <label htmlFor="amount" className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">
                             Total Amount ($)
                         </label>
                         <input
+                            id="amount"
                             type="number"
                             step="0.01"
                             required
