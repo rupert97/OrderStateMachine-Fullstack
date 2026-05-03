@@ -33,4 +33,4 @@ def create_order():
 
     order = order_service.create_order(product_ids, amount)
     
-    return order.model_dump(), 201
+    return order.model_dump(by_alias=True), 201

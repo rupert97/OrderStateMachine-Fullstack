@@ -17,6 +17,7 @@ class OrderService:
 
     Attributes:
         repository: The data access layer for persisting and retrieving orders.
+        support_service: The support service for running business rules.
     """
 
     def __init__(self, repository: AbstractOrderRepository, support_service):

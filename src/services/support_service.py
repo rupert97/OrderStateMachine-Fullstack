@@ -1,3 +1,10 @@
+"""
+Support Service for high-value order handling in the Order Management System.
+
+This module contains the logic for identifying and handling high-value orders
+that require manual intervention from the support team.
+"""
+
 from src.repositories.models import Order
 from typing import Dict, Any
 

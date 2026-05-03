@@ -34,7 +34,7 @@ def handle_transition(order_id: str):
 
     try:
         updated_order = order_service.handle_event(order_id, event_type, body.get("metadata", {}))
-        return updated_order.model_dump(), 200
+        return updated_order.model_dump(by_alias=True), 200
     except OrderNotFoundError as e:
         logger.warning(f"Order not found: {order_id}")
         return {"error": str(e)}, 404

@@ -26,6 +26,6 @@ def get_order(order_id: str):
     """
     try:
         order = order_service.repository.get_order(order_id)
-        return order.model_dump(), 200
+        return order.model_dump(by_alias=True), 200
     except OrderNotFoundError:
         return {"error": "Order not found"}, 404

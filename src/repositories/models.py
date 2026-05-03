@@ -4,7 +4,8 @@ Data models for the Order Management System.
 This module defines the Pydantic schemas used for data validation,
 internal processing, and database serialization.
 """
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
+from pydantic.alias_generators import to_camel
 from uuid import uuid4
 from datetime import datetime
 from typing import List, Dict, Any
@@ -20,6 +21,8 @@ class OrderHistory(BaseModel):
         timestamp: ISO 8601 string of when the event occurred.
         metadata: Key-value pairs providing additional context.
     """
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
+
     event_type: str
     from_state: str
     to_state: str
@@ -38,6 +41,14 @@ class Order(BaseModel):
         history: Chronological list of state transitions for auditing.
         version: Counter used for optimistic locking.
     """
+
+    #Serialize to camel case
+    model_config = ConfigDict(
+        alias_generator=to_camel, 
+        populate_by_name=True,
+        from_attributes=True
+    )
+
     order_id: str = Field(default_factory=lambda: str(uuid4()))
     product_ids: list[str]
     amount: float
@@ -73,4 +84,3 @@ class EventRequest(BaseModel):
     """Schema for validating state transition requests."""
     event_type: str
     metadata: dict
-    
