@@ -8,7 +8,7 @@ export default function CreateOrder() {
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState<any>(null);
     const [error, setError] = useState('');
-    const [copied, setCopied] = useState(false); // New state for UX polish
+    const [copied, setCopied] = useState(false);
 
     const handleCreate = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -17,7 +17,6 @@ export default function CreateOrder() {
         setResult(null);
         setCopied(false);
 
-        // Prepare data: Convert comma-string to array and string-amount to float
         const payload = {
             productIds: productIds.split(',').map(id => id.trim()),
             amount: parseFloat(amount)
@@ -44,7 +43,7 @@ export default function CreateOrder() {
     const copyToClipboard = (id: string) => {
         navigator.clipboard.writeText(id);
         setCopied(true);
-        setTimeout(() => setCopied(false), 2000); // Reset after 2 seconds
+        setTimeout(() => setCopied(false), 2000);
     };
 
     return (
@@ -115,10 +114,10 @@ export default function CreateOrder() {
                         </label>
                         <div className="flex items-center justify-between bg-white p-3 rounded-xl border border-emerald-100 shadow-sm">
                             <span className="font-mono text-sm text-slate-600 break-all select-all">
-                                {result.order_id}
+                                {result.orderId}
                             </span>
                             <button
-                                onClick={() => copyToClipboard(result.order_id)}
+                                onClick={() => copyToClipboard(result.orderId)}
                                 className={`ml-3 shrink-0 text-xs px-3 py-1.5 rounded-lg font-bold transition-all ${copied
                                     ? 'bg-emerald-500 text-white'
                                     : 'bg-emerald-100 hover:bg-emerald-200 text-emerald-800'

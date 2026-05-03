@@ -29,7 +29,7 @@ export default function OrderViewer() {
 
     const triggerEvent = async (eventType: string) => {
         try {
-            const res = await fetch(`${API_URL}/orders/${order.order_id}/events`, {
+            const res = await fetch(`${API_URL}/orders/${order.orderId}/events`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -105,7 +105,7 @@ export default function OrderViewer() {
                                 <div>
                                     <label className="text-xs font-bold text-slate-400 uppercase">Product Inventory</label>
                                     <div className="flex flex-wrap gap-2 mt-2">
-                                        {order.product_ids.map((p: string) => (
+                                        {order.productIds.map((p: string) => (
                                             <span key={p} className="px-3 py-1 bg-slate-100 text-slate-600 rounded-md text-xs font-mono">
                                                 {p}
                                             </span>
@@ -114,7 +114,7 @@ export default function OrderViewer() {
                                 </div>
                                 <div>
                                     <label className="text-xs font-bold text-slate-400 uppercase">Internal ID</label>
-                                    <p className="text-sm font-mono text-slate-500 break-all">{order.order_id}</p>
+                                    <p className="text-sm font-mono text-slate-500 break-all">{order.orderId}</p>
                                 </div>
                             </div>
 

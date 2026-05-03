@@ -23,32 +23,27 @@ export default function StateMachineDiagram({ currentStatus }: Props) {
 
     const generateDefinition = (activeState: string) => {
         return `
-      stateDiagram-v2
-        direction LR
-        
-        [*] --> Pending
-        Pending --> OnHold: pendingBio
-        Pending --> PendingPayment: noVerif
-        Pending --> Cancelled: payFail
-        
-        OnHold --> PendingPayment: bioSuccess
-        OnHold --> Cancelled: verifFail
-        
-        PendingPayment --> Confirmed: paySuccess
-        Confirmed --> Processing: prepShip
-        Processing --> Shipped: dispatch
-        
-        Shipped --> Delivered: received
-        Shipped --> OnHold: deliveryIssue
-        
-        Delivered --> Returning: returnInit
-        Returning --> Returned: itemBack
-        Returned --> Refunded: refundDone
 
-        PendingPayment --> Cancelled: cancel
-        Confirmed --> Cancelled: cancel
-        Processing --> Cancelled: cancel
-        Shipped --> Cancelled: cancel
+        stateDiagram
+        direction TB
+        [*] --> Pending
+        Pending --> OnHold:pendingBio
+        Pending --> PendingPayment:noVerif 
+        Pending --> Cancelled:payFail
+        OnHold --> PendingPayment:bioSuccess
+        OnHold --> Cancelled:verifFail
+        PendingPayment --> Confirmed:paySuccess
+        Confirmed --> Processing:prepShip
+        Processing --> Shipped:dispatch
+        Shipped --> Delivered:received
+        Shipped --> OnHold:deliveryIssue
+        Delivered --> Returning:returnInit
+        Returning --> Returned:itemBack
+        Returned --> Refunded:refundDone
+        PendingPayment --> Cancelled:cancel
+        Confirmed --> Cancelled:cancel
+        Processing --> Cancelled:cancel
+        Shipped --> Cancelled:cancel
 
         %% Highlighting logic
         class ${activeState} active
