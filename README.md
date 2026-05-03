@@ -103,4 +103,4 @@ cd backend
 sam build
 sam deploy --guided
 ```
-Once deployed, update the PUBLIC_API_URL in the frontend .env with the WebEndpoint provided in the SAM outputs.
+Once deployed, update the `PUBLIC_API_URL` in the frontend `.env` with the WebEndpoint provided in the SAM outputs.
