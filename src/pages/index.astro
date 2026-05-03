@@ -1,0 +1,53 @@
+---
+import "../styles/global.css";
+import OrderViewer from "../components/OrderViewer";
+import CreateOrder from "../components/CreateOrder";
+---
+
+<style is:global>
+	.active rect,
+	.active circle {
+		fill: #2563eb !important;
+		stroke: #1d4ed8 !important;
+		stroke-width: 4px !important;
+	}
+	.active .nodeLabel {
+		color: white !important;
+		font-weight: 800 !important;
+	}
+	.active {
+		filter: drop-shadow(0 0 12px rgba(37, 99, 235, 0.4));
+	}
+	.active {
+		animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+	}
+
+	@keyframes pulse {
+		0%,
+		100% {
+			opacity: 1;
+		}
+		50% {
+			opacity: 0.85;
+		}
+	}
+</style>
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<title>Order Manager</title>
+	</head>
+	<body class="bg-gray-50 min-h-screen py-12 px-4">
+		<main class="max-w-4xl mx-auto space-y-8">
+			<h1 class="text-4xl font-black text-center text-slate-900 mb-12">
+				Order State Machine
+			</h1>
+			<CreateOrder client:load />
+			<div my-8></div>
+			<OrderViewer client:load />
+		</main>
+	</body>
+</html>
