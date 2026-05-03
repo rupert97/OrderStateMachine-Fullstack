@@ -15,3 +15,7 @@ class OrderNotFoundError(OrderAppError):
 class OrderConcurrencyError(OrderAppError):
     """Raised when two events try to update the same order at the same time."""
     pass
+
+class OrderAlreadyExistsError(OrderAppError):
+    """Raised when an order with the same ID already exists."""
+    pass

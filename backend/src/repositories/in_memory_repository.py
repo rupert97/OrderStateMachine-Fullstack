@@ -8,7 +8,7 @@ where a real database is not required.
 from typing import Dict
 from src.repositories.models import Order
 from src.repositories.base import AbstractOrderRepository
-from src.exceptions import OrderNotFoundError, OrderConcurrencyError
+from src.exceptions import OrderNotFoundError, OrderConcurrencyError, OrderAlreadyExistsError
 
 class InMemoryOrderRepository(AbstractOrderRepository):
     """
@@ -59,7 +59,7 @@ class InMemoryOrderRepository(AbstractOrderRepository):
 
         if is_new:
             if order_id in self._storage:
-                raise Exception("Order already exists")
+                raise OrderAlreadyExistsError(f"Order {order_id} already exists")
             self._storage[order_id] = order.model_dump()
             return
 
@@ -71,4 +71,4 @@ class InMemoryOrderRepository(AbstractOrderRepository):
             raise OrderConcurrencyError(f"Order {order_id} has been updated by another process")
 
         order.version += 1
-        self._storage[order_id] = order.model_dump()
+        self._storage[order_id] = order.model_dump()

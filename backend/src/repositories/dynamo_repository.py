@@ -10,7 +10,7 @@ from decimal import Decimal
 from botocore.exceptions import ClientError
 from src.repositories.base import AbstractOrderRepository
 from src.repositories.models import Order
-from src.exceptions import OrderNotFoundError, OrderConcurrencyError
+from src.exceptions import OrderNotFoundError, OrderConcurrencyError, OrderAlreadyExistsError
 
 
 class DynamoDBOrderRepository(AbstractOrderRepository):
@@ -61,7 +61,7 @@ class DynamoDBOrderRepository(AbstractOrderRepository):
 
         Raises:
             OrderConcurrencyError: If the version in the database doesn't match the current one.
-            Exception: If an order with the same ID already exists during creation.
+            OrderAlreadyExistsError: If an order with the same ID already exists during creation.
         """
         try:
             order_data = json.loads(json.dumps(order.model_dump()), parse_float=Decimal)
@@ -87,7 +87,7 @@ class DynamoDBOrderRepository(AbstractOrderRepository):
         except ClientError as e:
             if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
                 if is_new:
-                    raise Exception("Order ID already exists")
+                    raise OrderAlreadyExistsError(f"Order {order.order_id} already exists")
                 else:
                     raise OrderConcurrencyError("Order was updated by another process.")
-            raise e
+            raise e
