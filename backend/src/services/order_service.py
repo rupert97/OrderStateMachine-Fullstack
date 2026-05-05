@@ -5,7 +5,7 @@ This module coordinates transitions between order states, enforces business rule
 and interacts with the order repository to persist state changes.
 """
 from src.repositories.base import AbstractOrderRepository
-from src.utils.state_config import VALID_TRANSITIONS, NON_CANCELLABLE_STATES, OrderState
+from src.utils.state_config import VALID_TRANSITIONS, NON_CANCELLABLE_STATES, OrderState, EventType  
 from src.exceptions import InvalidStateTransition
 from src.repositories.models import Order
 from typing import Dict, Any
@@ -93,7 +93,7 @@ class OrderService:
         Raises:
             InvalidStateTransition: If the transition is prohibited or the state is unknown.
         """
-        if event_type == "orderCancelledByUser" and current_state not in NON_CANCELLABLE_STATES:
+        if event_type == EventType.ORDER_CANCELLED_BY_USER and current_state not in NON_CANCELLABLE_STATES:
             return OrderState.CANCELLED
             
         if current_state not in VALID_TRANSITIONS:

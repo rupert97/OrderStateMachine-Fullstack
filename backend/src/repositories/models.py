@@ -9,6 +9,7 @@ from pydantic.alias_generators import to_camel
 from uuid import uuid4
 from datetime import datetime
 from typing import List, Dict, Any
+from src.utils.state_config import OrderState
 
 class OrderHistory(BaseModel):
     """
@@ -52,7 +53,7 @@ class Order(BaseModel):
     order_id: str = Field(default_factory=lambda: str(uuid4()))
     product_ids: list[str]
     amount: float
-    status: str = "Pending"
+    status: str = OrderState.PENDING
     history: List[OrderHistory] = Field(default_factory=list)
     version: int = 0
 

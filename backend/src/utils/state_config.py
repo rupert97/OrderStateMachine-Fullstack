@@ -14,45 +14,62 @@ class OrderState(str, Enum):
     REFUNDED = "Refunded"
     CANCELLED = "Cancelled"
 
+class EventType(str, Enum):
+    PENDING_BIOMETRICAL_VERIFICATION = "pendingBiometricalVerification"
+    NO_VERIFICATION_NEEDED = "noVerificationNeeded"
+    PAYMENT_FAILED = "paymentFailed"
+    ORDER_CANCELLED = "orderCancelled"
+    ORDER_CANCELLED_BY_USER = "orderCancelledByUser"
+    BIOMETRICAL_VERIFICATION_SUCCESSFUL = "biometricalVerificationSuccessful"
+    VERIFICATION_FAILED = "verificationFailed"
+    PAYMENT_SUCCESSFUL = "paymentSuccessful"
+    PREPARING_SHIPMENT = "preparingShipment"
+    ITEM_DISPATCHED = "itemDispatched"
+    ITEM_RECEIVED_BY_CUSTOMER = "itemReceivedByCustomer"
+    DELIVERY_ISSUE = "deliveryIssue"
+    RETURN_INITIATED_BY_CUSTOMER = "returnInitiatedByCustomer"
+    ITEM_RECEIVED_BACK = "itemReceivedBack"
+    REFUND_PROCESSED = "refundProcessed"
+
 VALID_TRANSITIONS = {
     OrderState.PENDING: {
-        "pendingBiometricalVerification": OrderState.ON_HOLD,
-        "noVerificationNeeded": OrderState.PENDING_PAYMENT,
-        "paymentFailed": OrderState.CANCELLED,
-        "orderCancelled": OrderState.CANCELLED,
-        "orderCancelledByUser": OrderState.CANCELLED,
+        EventType.PENDING_BIOMETRICAL_VERIFICATION: OrderState.ON_HOLD,
+        EventType.NO_VERIFICATION_NEEDED: OrderState.PENDING_PAYMENT,
+        EventType.PAYMENT_FAILED: OrderState.CANCELLED,
+        EventType.ORDER_CANCELLED: OrderState.CANCELLED,
+        EventType.ORDER_CANCELLED_BY_USER: OrderState.CANCELLED,
     },
     OrderState.ON_HOLD: {
-        "biometricalVerificationSuccessful": OrderState.PENDING_PAYMENT,
-        "verificationFailed": OrderState.CANCELLED,
-        "orderCancelledByUser": OrderState.CANCELLED
+        EventType.BIOMETRICAL_VERIFICATION_SUCCESSFUL: OrderState.PENDING_PAYMENT,
+        EventType.VERIFICATION_FAILED: OrderState.CANCELLED,
+        EventType.ORDER_CANCELLED_BY_USER: OrderState.CANCELLED
     },
     OrderState.PENDING_PAYMENT: {
-        "paymentSuccessful": OrderState.CONFIRMED,
-        "orderCancelledByUser": OrderState.CANCELLED,
+        EventType.PAYMENT_SUCCESSFUL: OrderState.CONFIRMED,
+        EventType.ORDER_CANCELLED_BY_USER: OrderState.CANCELLED,
     },
     OrderState.CONFIRMED: {
-        "preparingShipment": OrderState.PROCESSING,
-        "orderCancelledByUser": OrderState.CANCELLED,
+        EventType.PREPARING_SHIPMENT: OrderState.PROCESSING,
+        EventType.ORDER_CANCELLED_BY_USER: OrderState.CANCELLED,
     },
     OrderState.PROCESSING: {
-        "itemDispatched": OrderState.SHIPPED,
-        "orderCancelledByUser": OrderState.CANCELLED,
+        EventType.ITEM_DISPATCHED: OrderState.SHIPPED,
+        EventType.ORDER_CANCELLED_BY_USER: OrderState.CANCELLED,
     },
     OrderState.SHIPPED: {
-        "itemReceivedByCustomer": OrderState.DELIVERED,
-        "deliveryIssue": OrderState.ON_HOLD,
-        "orderCancelled": OrderState.CANCELLED
+        EventType.ITEM_RECEIVED_BY_CUSTOMER: OrderState.DELIVERED,
+        EventType.DELIVERY_ISSUE: OrderState.ON_HOLD,
+        EventType.ORDER_CANCELLED: OrderState.CANCELLED
     },
     OrderState.DELIVERED: {
-        "returnInitiatedByCustomer": OrderState.RETURNING
+        EventType.RETURN_INITIATED_BY_CUSTOMER: OrderState.RETURNING
     },
     OrderState.RETURNING: {
-        "itemReceivedBack": OrderState.RETURNED,
-        "orderCancelledByUser": OrderState.CANCELLED
+        EventType.ITEM_RECEIVED_BACK: OrderState.RETURNED,
+        EventType.ORDER_CANCELLED_BY_USER: OrderState.CANCELLED
     },
     OrderState.RETURNED: {
-        "refundProcessed": OrderState.REFUNDED,
+        EventType.REFUND_PROCESSED: OrderState.REFUNDED,
     },
 }
 NON_CANCELLABLE_STATES = [OrderState.DELIVERED, OrderState.RETURNED, OrderState.REFUNDED]

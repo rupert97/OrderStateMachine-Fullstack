@@ -6,9 +6,15 @@ that require manual intervention from the support team.
 """
 
 from src.repositories.models import Order
-from typing import Dict, Any
+from typing import Dict, Any, List, Callable
+from src.utils.state_config import EventType
 
 class SupportService:
+
+    def __init__(self):
+        self._rules_registry: Dict[str, List[Callable]] = {
+            EventType.PAYMENT_FAILED: [self._check_high_value_failure],
+        }
 
     def run_business_rules(self, order: Order, event_type: str, metadata: Dict[str, Any]):
         """
@@ -19,10 +25,14 @@ class SupportService:
             event_type: The event triggering the rule check.
             metadata: Additional context that could be used to pass event-specific data.
         """
-        # Rule: paymentFailed + amount > 1000
-        if event_type == "paymentFailed" and order.amount > 1000:
-            self._create_support_ticket(order)
+        rules = self._rules_registry.get(event_type, [])
+        for rule_function in rules:
+            rule_function(order, metadata)
 
+    def _check_high_value_failure(self, order: Order, metadata: Dict[str, Any]):
+        """Rule: If payment fails on orders > $1000, create a ticket."""
+        if order.amount > 1000:
+            self._create_support_ticket(order)
 
     def _create_support_ticket(self, order: Order):
         """
